@@ -69,11 +69,11 @@ jobs:
           context: ./Backend
           push: true
           # Note: Docker tags must be entirely lowercase!
-          tags: ghcr.io/omkarshejwal/production-planningv05-backend:latest
+          tags: ghcr.io/${{ github.repository_owner }}/vitrumv5-backend:latest
 
       - name: Build and push Frontend Image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ghcr.io/omkarshejwal/production-planningv05-frontend:latest
+          tags: ghcr.io/${{ github.repository_owner }}/vitrumv5-frontend:latest
