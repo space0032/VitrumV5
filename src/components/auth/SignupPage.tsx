@@ -24,6 +24,9 @@ export const DEPARTMENTS = [
   'Quality Control',
   'Maintenance',
   'Planning',
+  'Personnel',
+  'IT',
+  'Sales',
 ] as const;
 
 const inputClass =

@@ -183,7 +183,6 @@ export type ActiveModule =
   | 'Profile';
 
 export interface AuthUser {
-  id: number;
   employee_id: string;
   employee_name: string;
   department: string;

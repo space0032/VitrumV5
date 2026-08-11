@@ -34,11 +34,11 @@ def get_current_user(
     if credentials is None:
         raise HTTPException(status_code=401, detail="Authentication required.")
 
-    user_id = verify_session_token(credentials.credentials)
-    if user_id is None:
+    employee_id = verify_session_token(credentials.credentials)
+    if employee_id is None:
         raise HTTPException(status_code=401, detail="Invalid or expired session token.")
 
-    user = db.get(User, user_id)
+    user = db.query(User).filter(User.employee_id == employee_id).first()
     if user is None or not user.is_active:
         raise HTTPException(status_code=401, detail="User not found or inactive.")
 

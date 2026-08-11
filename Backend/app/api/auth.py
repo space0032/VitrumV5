@@ -3,7 +3,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models.user import User, UserRole
+from app.models.user import User
 from app.schemas.auth import LoginRequest, UserCreate, UserResponse, ChangePasswordRequest
 from app.services.security import (
     create_session_token,
@@ -11,6 +11,8 @@ from app.services.security import (
     verify_password,
 )
 from app.api.deps import get_current_user
+
+VALID_ROLES = ("Editor", "Viewer")
 
 router = APIRouter(tags=["Authentication"])
 
@@ -36,7 +38,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid User ID or password.")
 
     return {
-        "token": create_session_token(user.id),
+        "token": create_session_token(user.employee_id),
         "user": UserResponse.model_validate(user),
     }
 
@@ -58,8 +60,8 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
     if len(payload.password) < 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters.")
 
-    role = payload.role or UserRole.VIEWER.value
-    if role not in (UserRole.EDITOR.value, UserRole.VIEWER.value):
+    role = payload.role or "Viewer"
+    if role not in VALID_ROLES:
         raise HTTPException(status_code=400, detail="Role must be either Editor or Viewer.")
 
     user = User(
@@ -69,7 +71,7 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
         email=email,
         phone_number=payload.phone_number.strip(),
         password=hash_password(payload.password),
-        role=UserRole(role),
+        role=role,
         is_active=True,
     )
     db.add(user)

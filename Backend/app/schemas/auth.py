@@ -17,11 +17,10 @@ class UserCreate(BaseModel):
     role: Optional[str] = "Viewer"
 
 class UserResponse(BaseModel):
-    id: int
     employee_id: str
     employee_name: str
-    department: str
-    email: str
+    department: Optional[str] = None
+    email: Optional[str] = None
     phone_number: Optional[str] = None
     role: str
     is_active: bool

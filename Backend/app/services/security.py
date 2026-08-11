@@ -43,10 +43,10 @@ def verify_password(password: str, stored: str) -> bool:
         return False
 
 
-def create_session_token(user_id: int) -> str:
-    """Create an HMAC-SHA256 signed session token: <user_id>.<expiry>.<signature>."""
+def create_session_token(employee_id: str) -> str:
+    """Create an HMAC-SHA256 signed session token: <employee_id>.<expiry>.<signature>."""
     now = int(datetime.now(timezone.utc).timestamp())
-    payload = f"{user_id}.{now + TOKEN_TTL_SECONDS}"
+    payload = f"{employee_id}.{now + TOKEN_TTL_SECONDS}"
     signature = hmac.new(
         settings.SECRET_KEY.encode("utf-8"),
         payload.encode("utf-8"),
@@ -55,8 +55,8 @@ def create_session_token(user_id: int) -> str:
     return f"{payload}.{signature}"
 
 
-def verify_session_token(token: str) -> int | None:
-    """Verify a session token and return the user id, or None if invalid/expired."""
+def verify_session_token(token: str) -> str | None:
+    """Verify a session token and return the employee_id, or None if invalid/expired."""
     try:
         payload, signature = token.rsplit(".", 1)
         expected = hmac.new(
@@ -67,9 +67,9 @@ def verify_session_token(token: str) -> int | None:
         if not hmac.compare_digest(signature, expected):
             return None
 
-        user_id, expiry = payload.split(".")
+        employee_id, expiry = payload.split(".", 1)
         if int(expiry) < int(datetime.now(timezone.utc).timestamp()):
             return None
-        return int(user_id)
+        return employee_id
     except Exception:
         return None
