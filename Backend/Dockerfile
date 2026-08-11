@@ -14,7 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create a non-root user and give them ownership of the /app directory
-RUN adduser --disabled-password --gecos "" appuser && chown -R appuser /app
+# (including /app/data so the sqlite database volume is writable)
+RUN adduser --disabled-password --gecos "" appuser \
+    && mkdir -p /app/data \
+    && chown -R appuser:appuser /app
 USER appuser
 
 # Expose port
